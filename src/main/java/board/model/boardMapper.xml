@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="board.model.BoardMapper">
+	<select id="totalCount" resultType="int">
+		select count(num) cnt from board
+	</select>
+	
+	<insert id="insertBoard" parameterType="board.model.BoardVO"> <!-- <<-가 가지고있는것은 #{}으로 가능 -->
+		insert into board(num, subject, content, userid, wdate, filename, filesize)
+		values(board_seq.nextval, #{subject}, #{content:VARCHAR}, #{userid}, systimestamp, #{filename:VARCHAR}, #{filesize:NUMERIC})
+		<!-- Null값을 어떻게 변환해야될지 써줘야 한다. filename:VARCHAR 이렇게. -->
+	</insert>
+</mapper>
