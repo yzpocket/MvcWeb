@@ -3,13 +3,29 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="board.model.BoardMapper">
-	<select id="totalCount" resultType="int">
+
+	<!-- select insert delete update 태그로 직관적으로 작성, 구분이 가능하다. -->
+	<select id="totalCount" resultType="int"> <!-- ORM이라 부르는 이유 db의totalCount를 자바의 int타입으로 맞추겠다 관계형데이터베이스 -->
+	<!-- select문은 resultType이 필수임 : _int(기본자료형 int), int(래퍼클래스 java.lang.Integer) -->
 		select count(num) cnt from board
 	</select>
 	
 	<insert id="insertBoard" parameterType="board.model.BoardVO"> <!-- <<-가 가지고있는것은 #{}으로 가능 -->
+	<!-- insert문은 parameterType이 필수임 -->
 		insert into board(num, subject, content, userid, wdate, filename, filesize)
 		values(board_seq.nextval, #{subject}, #{content:VARCHAR}, #{userid}, systimestamp, #{filename:VARCHAR}, #{filesize:NUMERIC})
 		<!-- Null값을 어떻게 변환해야될지 써줘야 한다. filename:VARCHAR 이렇게. -->
 	</insert>
+	
+	<select id="listBoard" resultType="board.model.BoardVO">
+		select * from board order by num desc
+	</select>
+	<!-- [7]  -->
+	<select id="viewBoard" resultType="board.model.BoardVO" parameterType="_int">
+		select * from board where num=#{value}
+	</select>
+	
+	<delete id="deleteBoard" parameterType="_int">
+		delete from board where num=#{value}
+	</delete>
 </mapper>

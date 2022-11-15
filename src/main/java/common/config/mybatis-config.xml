@@ -6,17 +6,19 @@
 	<environments default="development">
 		<environment id="development">
 			<transactionManager type="JDBC" />
-			<dataSource type="POOLED">
+			<dataSource type="POOLED"> <!-- 커넥션을 미리 준비하는 방식 커넥션  -->
 				<property name="driver" value="oracle.jdbc.driver.OracleDriver" />
 				<property name="url" value="jdbc:oracle:thin:@localhost:49161:XE" />
 				<property name="username" value="multi" />
 				<property name="password" value="tiger" />
 			</dataSource>
 		</environment>
+		<!-- <environment> 부분은 추가가 가능하다 = 개발환경, 서비스환경이 다르거나 개발환경이
+		동일하지만 다른 계정인 경우 등등 추가 할 수 있다. -->
 	</environments>
 	<mappers>
 		<!-- <mapper resource="org/mybatis/example/BlogMapper.xml" /> -->
-		<!-- 패키지의 경로를 써야 함. -->
+		<!-- 이부분에서 SQL문이 작성 될 파일의 패키지 경로를 써야 함. -->
 		<mapper resource="board/model/boardMapper.xml" />
 	</mappers>
 </configuration>

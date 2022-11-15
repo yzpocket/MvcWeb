@@ -2,6 +2,7 @@ package board.model;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
@@ -10,7 +11,7 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
 public class BoardDAOMyBatis {
 	
-	private final String NS="board.model.BoardMapper"; //변경안되게 final로 선언
+	private final String NS="board.model.BoardMapper"; //변경안되게 맵퍼 위치 네임 스페이스 위치 final로 선언
 
 	private String resource="common/config/mybatis-config.xml"; //[설계도]가 있는 경로
 	private SqlSession ses; //이것을 얻어와야 한다. 
@@ -27,7 +28,7 @@ public class BoardDAOMyBatis {
 	}//---------
 	public int getTotalCount() {
 		ses=this.getSessionFactory().openSession(); //[8.3] SqlSession 객체(ses)를 얻어 올 수 있다.
-		int count=ses.selectOne(NS+".totalCount");
+		int count=ses.selectOne(NS+".totalCount"); 		//단일행을 가져 올 때는 selectOne()을 쓰면 된다
 		if(ses!=null) ses.close();
 		return count;
 	}
@@ -39,6 +40,42 @@ public class BoardDAOMyBatis {
 		}else {
 			ses.rollback();
 		}
+		if(ses!=null) ses.close();
 		return n;
+	}
+	
+	public List<BoardVO> listBoard() {
+		ses=this.getSessionFactory().openSession();
+		//다중행을 가져올 때는 selectList()를 쓰면 된다
+		//단일행을 가져 올 때는 selectOne()을 쓰면 된다
+		List<BoardVO> arr=ses.selectList(NS+".listBoard");
+		if(ses!=null) ses.close();
+		return arr;
+	}
+
+	//[6]
+	public BoardVO viewBoard(int num) {
+		try {
+			ses=this.getSessionFactory().openSession();
+			BoardVO vo=ses.selectOne(NS+".viewBoard", num);
+			return vo;
+		} finally {
+			close();
+		}
+	}
+	
+	public void close() {
+		if(ses!=null) ses.close();
+
+	}
+	public int deleteBoard(int num) {
+		try {
+			ses=this.getSessionFactory().openSession(true);
+			//디폴트가 수동커밋이지만 매개변수로 true를 넘기면 auto commit된다.
+			int n=ses.delete(NS+".deleteBoard", num);
+			return n;
+		}finally {
+			close();
+		}
 	}
 }

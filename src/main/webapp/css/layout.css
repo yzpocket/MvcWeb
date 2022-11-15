@@ -121,6 +121,9 @@ div.container{
 table{
 	border-collapse: collapse;
 }
+td, th{
+	padding: 8px;
+}
 .m1{
 	background-color:#efefef;
 	padding: 5px;
@@ -168,4 +171,19 @@ table{
 span.ck{
 	font-size:0.8em;
 	color:maroon;
+}
+a:link{
+	color:green;
+	text-decoration: none;
+}
+a:visited{
+	color:maroon;
+	text-decoration: none;
+}
+a:active{
+	color:blue;
+	text-decoration: none;	
+}
+a:hover{
+	cursor:pointer;
 }

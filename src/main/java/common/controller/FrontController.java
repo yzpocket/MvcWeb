@@ -34,7 +34,7 @@ public class FrontController extends HttpServlet {
     
 	private HashMap<String, Object> cmdMap=new HashMap<>();
     
-	@Override
+	@Override //이곳에서 Command.properties를 읽어들인다.
 	public void init(ServletConfig conf) throws ServletException{
 		System.out.println("init()호출됨..");
 		String props=conf.getInitParameter("config");
@@ -52,7 +52,7 @@ public class FrontController extends HttpServlet {
 			if(set==null) return;
 			for(Object key:set) {
 				String cmd=key.toString();//key값 "/index.do"이런것들 찾는지 확인.
-				String className=pr.getProperty(cmd);// 위 key값에 따라 뒷 value값(클래스) 나타나는지 확인
+				String className=pr.getProperty(cmd);// 위 key값에 따라 뒷 value값(클래스) 을 찾는다.
 				if(className!=null) {
 					className=className.trim(); //메모리 올릴것이라 혹시 있을 수 있는 공백제거
 				}
@@ -80,7 +80,7 @@ public class FrontController extends HttpServlet {
 	
 	
 	private void process(HttpServletRequest req, HttpServletResponse res)throws ServletException, IOException{
-		//1. 클라이언트 요청 URI를 분석해보자.
+		//1. 클라이언트 요청 URI를 분석하
 //		String uri=req.getRequestURI();
 //		System.out.println("uri: "+uri); //uri에서 컨텍스트 위치는 제외하고 그 이후 /~.do가 필요하다.
 //		String myctx=req.getContextPath(); //컨텍스트 위치 "/MvcWeb"
@@ -89,7 +89,7 @@ public class FrontController extends HttpServlet {
 		
 		//위 과정을 이렇게 쓸수 있게 기능이 생김
 		String cmd=req.getServletPath(); 
-		System.out.println("cmd==>"+cmd); //원하는것만 뽑은지 확인.
+		System.out.println("cmd==>"+cmd); //패스 정보 (index.do이런것)원하는것만 추출
 		
 		Object instance = cmdMap.get(cmd); //해쉬맵에서 ******아까 저장한 cmd 객체를 반환 받아옴 *******
 		if(instance==null) {//객체가 없다면
@@ -103,21 +103,21 @@ public class FrontController extends HttpServlet {
 		AbstractAction action=(AbstractAction)instance;
 		///////////////////////////////////////////////////////////
 		try {
-			//////[[[[[[[[ 최종적으로  아래 명령으로 액션들을 불러올 수 있다.]]]]]]]]]
+			//////[[[[[[[[ 최종적으로 아래 명령으로 액션들을 불러올 수 있다.]]]]]]]]]
 			action.execute(req, res);
-			//execute()는 컨트롤러 로직을 수행한 뒤 view페이지랑 이동 방식을 지정한다
-			String viewPage=action.getViewPage();
-			boolean isRedirect=action.isRedirect();
+			//execute()는 컨트롤러 로직을 수행한 뒤 view페이지랑 이동 방식을 실행하게 된다.
+			String viewPage=action.getViewPage(); //뷰페이지 정보를 얻는다.
+			boolean isRedirect=action.isRedirect(); //전송방식 정보를 얻는다.
 			System.out.println("viewPage: "+viewPage);
 
 			if(viewPage==null) {
 				viewPage="index.jsp";
 			}
 			if(isRedirect) {
-				//redirect 방식으로 페이지 이동
+				//redirect 방식이면 여기서 리다이렉트 페이지 이동이 실행됨.
 				res.sendRedirect(viewPage);
 			}else {
-				//forward 방식으로 페이지 이동
+				//forward 방식이면 여기서 포워드 페이지 이동이 실행됨
 				RequestDispatcher disp=req.getRequestDispatcher(viewPage);
 				disp.forward(req, res);
 			}
