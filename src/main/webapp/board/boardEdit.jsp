@@ -69,7 +69,8 @@
 	<c:if test="${board!=null}">
 	
 	<div class="bbs">
-	<form name="boardF" id="boardFrm" action="boardEditEnd.do" method="POST" onsubmit="return board_check()">
+	<form name="boardF" id="boardFrm" action="boardEditEnd.do" method="POST" onsubmit="return board_check()"
+	enctype="multipart/form-data"> <!-- enctype="multipart/form-data"로 MultipartRequest로 변경했음. -->
 		<!-- 수정 폼에는 기준이 될 글번호가 히든으로 넘어와야함. -->
 		<input type="hidden" name="num" value="${board.num}">
 		<ul>
@@ -85,6 +86,9 @@
 			<li>
 				${board.filename} [ ${board.filesize} bytes]<br>
 				<input type="file" name="filename" id="filename">
+				<!-- 예전에 첨부했던 파일명을 old_file 이란 이름으로 히든으로 넘기자. -->
+				<input type="hidden" name="old_file" value="${board.filename}"><br>
+				<!-- -------------------------------------------------- -->
 			</li>
 			<li>
 				<button class='btn'>글 수정</button>

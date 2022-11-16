@@ -35,6 +35,31 @@ WEB-INF/lib에 넣어둔다.
 	#boardList a:link, #boardList a:visited, #boardList a:hover{
 		text-decoration: none;
 	}
+	.pageWrap{
+		position:relative;
+	}
+	.paging{
+		list-style-type:none;
+		position: absolute;
+	    top: 50%;
+	    left: 50%;
+	    transform: translate(-50%, -50%);
+	}
+	.paging>li{
+		float:left;
+		padding:5px;
+		text-align: center;
+		width:2em;
+		border: 1px solid #ddd;
+		border-radius: 3px;
+		margin: 2px;
+	}
+	.paging>li.current{
+	 background-color: navy;
+	}
+	.paging>li.current a{
+	 color:white;
+	}
 </style>
 <div class="container">
 	<h1>Board List</h1>
@@ -63,7 +88,14 @@ WEB-INF/lib에 넣어둔다.
 						-index : 인덱스 번호 0~
 				-->
 			<li>${vo.num}</li>
-			<li><a href="boardView.do?num=${vo.num}">${vo.subject}</a></li> 
+			<li>
+				<a href="boardView.do?num=${vo.num}">${vo.subject}</a>
+				<c:if test="${vo.filesize > 0}">
+					<img src="images/attach.jpg" width="16px">
+				</c:if>
+			
+			
+			</li> 
 			<li>
 			${vo.userid}
 			</li>
@@ -73,6 +105,28 @@ WEB-INF/lib에 넣어둔다.
 			</c:forEach>
 			<!-- ----------------------------------- -->
 		</ul>
+		<!-- 페이징 처리 부분 [4], [5] 완료 한 뒤 다시 BoardListAction.java 액션컨트롤러로 이동------------------- -->
+		<div style="clear:both"></div>
+		<br><br>
+		<div class="pageWrap">
+			<ul class="paging">
+				<li><a href="boardList.do?cpage=${cpage-1}">P</a></li>
+				<c:forEach var="i" begin="1" end="${pageCount}">
+					<c:if test="${cpage==i}">
+						<li class="current"><a href="boardList.do?cpage=${i}">${i}</a></li>
+					</c:if>
+					<c:if test="${cpage!=i}">
+						<li><a href="boardList.do?cpage=${i}">${i}</a></li>
+					</c:if>
+				</c:forEach>
+				<li><a href="boardList.do?cpage=${cpage+1}">N</a></li>
+			</ul>
+		</div>
+		<br>
+		<div>
+			총 게시글 수 : ${totalCount}개, 현재 <span style="color:red">${cpage}</span> / 총 ${pageCount} pages
+		</div>
+		
 	</div>
 </div>
 

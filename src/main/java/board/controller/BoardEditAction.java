@@ -14,7 +14,7 @@ import board.model.BoardDAOMyBatis;
 import board.model.BoardVO;
 import common.controller.AbstractAction;
 
-public class BoardWriteAction extends AbstractAction {
+public class BoardEditAction extends AbstractAction {
 
 	@Override
 	public void execute(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -32,45 +32,58 @@ public class BoardWriteAction extends AbstractAction {
 			e.printStackTrace();
 		}
 //  -----------------------업로드 처리를 MultipartRequest 과정으로 바꿨기 때문에 아래 req.getParameter부분은 mr.으로 대체된다.
-		
+	
 		// [0] post방식일때는 한글처리 부터 
 //		req.setCharacterEncoding("UTF-8");
-		// [1] subject, content, userid=hong 값을 받아오자
+		
+		// [1] num, userid, subject, content, filename 값 받기
+//		String numStr=req.getParameter("num");
+//		String userid="hong";
 //		String subject=req.getParameter("subject");
 //		String content=req.getParameter("content");
-//		String userid="hong";
 //		String filename=null;
 //		long filesize=0;
+		String numStr=mr.getParameter("num");
 		String subject=mr.getParameter("subject");
 		String content=mr.getParameter("content");
 		String userid="hong";
 		String filename=mr.getFilesystemName("filename");
 		File file=mr.getFile("filename");
 		long filesize=0;
-		if(file!=null) {
+		if(file!=null) {//첨부한 파일이 있다면
 			filesize=file.length();
+			//예전에 첨부한 파일명 얻기
+			String old_file=mr.getParameter("old_file");
+			if(old_file!=null&& !old_file.trim().isEmpty()) {//예전에 첨부한 파일이 있다면
+				//서버에서 예전 파일을 지우자
+				File delFile=new File(upDir, old_file); //예전 파일 객체를 생성해서
+				if(delFile!=null) { //이것이 있다면
+					boolean b=delFile.delete(); //삭제 delete()를 실행하자
+					System.out.println("파일 삭제 여부: "+b); //삭제 되었는지 boolean을 보자.
+				}
+			}
 		}
 		
-		//유효성체크
-		if(subject==null||content==null||userid==null||subject.trim().isEmpty()) {
-			this.setViewPage("boardWrite.do");
+		// [2] 유효성 체크 (num, subject,userid)
+		if(numStr==null||subject==null||userid==null||
+				numStr.trim().isEmpty()||subject.trim().isEmpty()||userid.trim().isEmpty()) {
+			this.setViewPage("boardList.do");
 			this.setRedirect(true); //리다이렉트 방식으로 이동
 			return;
 		}
-		// [2-1] num은 int로 형변환해주는데 num은 시퀀스가 전달할예
+		// [2-1] num은 int로 형변환해준다.
+		int num=Integer.parseInt(numStr.trim());
 		// [3] 1번에서 받은 값 BoardVO에 담아주기
-		
-//  -----------------------업로드 처리를 MultipartRequest 과정으로 바꿨기 때문에 아래 vo부분의 파일관련 null부분은 위 얻어온 filename, filesize대체된다.
-
-		BoardVO vo=new BoardVO(0, userid, subject, content, null, filename, filesize);
+		BoardVO vo=new BoardVO(num, userid, subject, content, null, filename, filesize);
 		
 		// [4] dao의 updateBoard(vo)
 		BoardDAOMyBatis dao=new BoardDAOMyBatis();
 		
-		int n=dao.insertBoard(vo);
+		// [5] req에 메시지, 이동경로 저장
+		int n=dao.updateBoard(vo);
 		
-		String str=(n>0)?"글쓰기 성공":"실패";
-		String loc=(n>0)?"boardList.do":"javascript:history.back()";
+		String str=(n>0)?"글수정 성공":"실패";
+		String loc="boardList.do";
 		
 		req.setAttribute("msg", str);
 		req.setAttribute("loc", loc);
@@ -78,7 +91,7 @@ public class BoardWriteAction extends AbstractAction {
 		//뷰페이지 지정
 		this.setViewPage("message.jsp");
 		//이동방식 지정
-		this.setRedirect(false); //forward
+		this.setRedirect(false);
 	}
 
 }

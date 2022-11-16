@@ -1,5 +1,7 @@
 package board.controller;
 
+import java.io.File;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -22,7 +24,21 @@ public class BoardDeleteAction extends AbstractAction {
 		}
 //		[3] dao의 deleteBoard(num)
 		BoardDAOMyBatis dao=new BoardDAOMyBatis();
-		int n=dao.deleteBoard(Integer.parseInt(numStr.trim())); //numStr을 다시 num타입으로 변환
+		
+//글삭제시 첨부파일도 서버(upDir)에서 삭제하는것 추가------------------------------------------
+		//[1]db에서 해당 글 가져오기
+		BoardVO vo=dao.viewBoard(Integer.parseInt(numStr.trim()));
+		if(vo.getFilename()!=null) { //첨부파일이 있다면
+			//서버 /Upload디렉토리에서
+			String upDir=req.getServletContext().getRealPath("/Upload");
+			//해당 파일을 찾아와서 삭제 대상으로 만들고
+			File delFile=new File(upDir, vo.getFilename());
+			if(delFile!=null) {//삭제 대상 파일이 있다면
+				delFile.delete();//그 파일을 delete()를 수행해서 삭제하자.
+			}
+		}
+//----------------------------------------------------------------------------------
+		int n=dao.deleteBoard(Integer.parseInt(numStr.trim())); //numStr을 다시 num타입으로 변환해서 해당 글을 삭제
 		
 //		[4] 실행결과 메시지 및 이동 경로 지정
 //		   => req에 저장. msg, loc

@@ -3,6 +3,12 @@
  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
  "https://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
+	<!-- 타입 별칭 설정 (맵퍼에서 아래type내용을 Board로만 써도 BoardVO 사용가능  -->
+	<typeAliases>
+		<typeAlias type="board.model.BoardVO" alias="Board"/>
+	</typeAliases>
+	
+	<!-- 데이터베이스 트랜잭션 관리자 설정 (기본사항) ====== -->
 	<environments default="development">
 		<environment id="development">
 			<transactionManager type="JDBC" />
@@ -16,6 +22,8 @@
 		<!-- <environment> 부분은 추가가 가능하다 = 개발환경, 서비스환경이 다르거나 개발환경이
 		동일하지만 다른 계정인 경우 등등 추가 할 수 있다. -->
 	</environments>
+	
+	<!-- 맵퍼 정의 부분 =========================== -->
 	<mappers>
 		<!-- <mapper resource="org/mybatis/example/BlogMapper.xml" /> -->
 		<!-- 이부분에서 SQL문이 작성 될 파일의 패키지 경로를 써야 함. -->

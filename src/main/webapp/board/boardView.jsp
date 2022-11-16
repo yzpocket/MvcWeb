@@ -8,8 +8,8 @@
 <div class="container">
 	<h1>Board 글보기</h1>
 	<br>
-	<a href="boardWrite.do">글목록</a>|
-	<a href="boardList.do">글쓰기</a>
+	<a href="boardWrite.do">글쓰기</a>|
+	<a href="boardList.do">글목록</a>
 	<br><br>
 	<table border="1" style="width:90%;margin:auto">
 		<tr>
@@ -26,7 +26,10 @@
 			<td width="20%"><b>글쓴이</b></td>
 			<td width="30%"><b>${board.userid}</b></td>
 			<td width="20%"><b>첨부파일</b></td>
-			<td width="30%"><b>${board.filename}[ ${board.filesize} bytes ]</b></td>
+			<td width="30%"><b>
+			<a href="Upload/${board.filename}"download><img src="images/attach.jpg" width="15px">${board.filename}</a><br>
+			[ ${board.filesize} bytes ]
+			</b></td>
 		</tr>
 		<tr>
 			<td width="20%"><b>제목</b></td>

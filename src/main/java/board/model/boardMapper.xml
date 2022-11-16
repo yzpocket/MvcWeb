@@ -10,16 +10,38 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-ma
 		select count(num) cnt from board
 	</select>
 	
-	<insert id="insertBoard" parameterType="board.model.BoardVO"> <!-- <<-가 가지고있는것은 #{}으로 가능 -->
-	<!-- insert문은 parameterType이 필수임 -->
+	<!-- 시퀀스 증가한 값을 파라미터로 넘어온 vo에 객체에 setting 해주는 기능을 갖는다 <selectKey>가 하는 기능. -->
+	<insert id="insertBoard" parameterType="Board">
+		<!-- Board==board.model.BoardVO의 어느부분에 시퀀스 증가를 넣을래? == keyProperty에서 numwㅣ -->	
+		<!--   " BoardVO 에 넣는 num의 타입은? resultType= "int" -->
+		<selectKey keyProperty="num" resultType="int" order="BEFORE">
+			select board_seq.nextval from dual
+		</selectKey>
 		insert into board(num, subject, content, userid, wdate, filename, filesize)
-		values(board_seq.nextval, #{subject}, #{content:VARCHAR}, #{userid}, systimestamp, #{filename:VARCHAR}, #{filesize:NUMERIC})
-		<!-- Null값을 어떻게 변환해야될지 써줘야 한다. filename:VARCHAR 이렇게. -->
+		values(#{num}, #{subject}, #{content:VARCHAR}, #{userid}, systimestamp, #{filename:VARCHAR}, #{filesize:NUMERIC})
+		<!-- 아래_old와 values의 글번호 부분 표현 #{num} 과 board_seq.nextval 이 다르다. -->
 	</insert>
 	
-	<select id="listBoard" resultType="board.model.BoardVO">
-		select * from board order by num desc
+		<!-- 글번호인 num을 db에서 시퀀스로 받는것이 느려서 위 인서트문으로 대체되었다. 현재 사용 안함. -->
+		<insert id="insertBoard_old" parameterType="board.model.BoardVO"> <!-- <<-가 가지고있는것은 #{}으로 가능 -->
+		<!-- insert문은 parameterType이 필수임 -->
+			insert into board(num, subject, content, userid, wdate, filename, filesize)
+			values(board_seq.nextval, #{subject}, #{content:VARCHAR}, #{userid}, systimestamp, #{filename:VARCHAR}, #{filesize:NUMERIC})
+			<!-- Null값을 어떻게 변환해야될지 써줘야 한다. filename:VARCHAR 이렇게. -->
+		</insert>
+	
+	<!-- [6-4] rownum으로 재정렬, 시작, 끝값으로 필터링하는 페이징처리된 셀렉트문을 이용한다.-->
+	<select id="listBoard" resultType="Board" parameterType="map">
+		select * from (
+			select a.*,rownum rn from (select * from board order by num desc) a
+			)where rn between ${start} and ${end}
 	</select>
+	
+		<!-- 전체 리스트가 나오는 버전으로 페이징 처리 이전 부분이다. 현재 사용안함. -->
+		<select id="listBoard_old" resultType="board.model.BoardVO">
+			select * from board order by num desc
+		</select>
+		
 	<!-- [7]  -->
 	<select id="viewBoard" resultType="board.model.BoardVO" parameterType="_int">
 		select * from board where num=#{value}
@@ -28,4 +50,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-ma
 	<delete id="deleteBoard" parameterType="_int">
 		delete from board where num=#{value}
 	</delete>
+	
+	<!-- mybatis-config에서 alias 지정해서 파라미터타입에 별칭을 쓸 수 있다 위에도 다바꿔도됨.
+	board.model.BoardVO == Board 로 지정 했음 -->
+	<update id="updateBoard" parameterType="Board">
+		update board set subject=#{subject}, content=#{content:VARCHAR}, wdate=systimestamp
+		<!-- mybatis는 sql문에 동적인 if를 쓸 수 있다. -->
+		<!-- file이 업로드 되었다면 아랫문장까지 sql문으로 삽입해라 라는 뜻-->
+		<if test="filename!=null and filename!=''">
+			, filename=#{filename}, filesize=#{filesize}
+		</if>
+		where num=#{num}
+	</update>
 </mapper>
