@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="user.model.UserMapper">
+
+	<!-- 시퀀스 증가한 값을 파라미터로 넘어온 vo에 객체에 setting 해주는 기능을 갖는다 <selectKey>가 하는 기능. -->
+	<insert id="insertUser" parameterType="User">
+		<!-- Board==board.model.BoardVO의 어느부분에 시퀀스 증가를 넣을래? == keyProperty에서 num -->	
+			<selectKey keyProperty="idx" resultType="int" order="BEFORE">
+			select member_seq.nextval from dual
+		</selectKey>
+		insert into member(idx,name,userid,pwd,hp1,hp2,hp3,post,addr1,addr2,indate,mileage,status)
+		 values(#{idx}, #{name}, #{userid}, #{pwd}, #{hp1}, #{hp2}, #{hp3}, #{post:VARCHAR},
+		 #{addr1:VARCHAR}, #{addr2:VARCHAR}, sysdate, #{mileage}, #{status})
+	</insert>
+
+	<select id="idCheck" resultType="int" parameterType="string">
+		select idx from member where userid=#{value}
+	</select>
+	
+	<!-- DAO에서 옴 -->
+	<select id="selectUserByUserid" resultType="User" parameterType="string" >
+		select * from member where userid=#{value}
+	</select>
+</mapper>
