@@ -61,6 +61,19 @@ WEB-INF/lib에 넣어둔다.
 	 color:white;
 	}
 </style>
+<!-- [검색 0-1] 검색관련 텍스트 입력창에 대한 유효성 체크 기본 find_check() -->
+<script>
+	function find_check(){
+		let $keyword=$('#findKeyword');
+		if(!$keyword.val()){ //인풋의 입력값 밸류가 없다면, val() jquery함수다.
+			alert('검색어를 입력하세요');
+			$keyword.focus();
+			return false;
+		}
+		return true;
+	}
+</script>
+
 <div class="container">
 	<h1>Board List</h1>
 	<br>
@@ -71,6 +84,23 @@ WEB-INF/lib에 넣어둔다.
 	</p>
 	<br>
 		<div id="boardWrap">
+		
+		<!-- ------------------ 검색을 위한 세팅 ------------------- -->
+		<!-- [검색 0] jsp에 프론트 작업 - 검색 관련 선택 및 텍스트 입력 창을 생성해 준다. -->
+		<div id="boardSearch">
+		<!-- 검색은 보통 get메서드를 사용한다. -->
+			<form name="searchF" id="searchF" action="boardList.do" method="get" onsubmit="return find_check()"> 
+				<select name="findType" style="padding:5px">
+					<option value="1">제 목</option>
+					<option value="2">작성자</option>
+					<option value="3">글내용</option>
+				</select>
+				<input type="text" name="findKeyword" id="findKeyword" class="m2">
+				<button style="padding:5px">Search</button>
+			</form>
+		</div>
+		<!-- --------------------------------------------------- -->
+		
 		<ul id="boardList" class="boardList">
 			<li>번호</li>
 			<li>제목</li>
@@ -109,19 +139,22 @@ WEB-INF/lib에 넣어둔다.
 		<div style="clear:both"></div>
 		<br><br>
 		<div class="pageWrap">
-			<ul class="paging">
-				<li><a href="boardList.do?cpage=${cpage-1}">P</a></li>
+			<ul class="paging">             <!-- [검색 7-2]검색으로 ${qStr} 각 부분에 추가. -->
+				<li><a href="boardList.do?cpage=${cpage-1}${qStr}">P</a></li>
+				
 				<c:forEach var="i" begin="1" end="${pageCount}">
 					<c:if test="${cpage==i}">
-						<li class="current"><a href="boardList.do?cpage=${i}">${i}</a></li>
+						<li class="current"><a href="boardList.do?cpage=${i}${qStr}">${i}</a></li>
 					</c:if>
 					<c:if test="${cpage!=i}">
-						<li><a href="boardList.do?cpage=${i}">${i}</a></li>
+						<li><a href="boardList.do?cpage=${i}${qStr}">${i}</a></li>
 					</c:if>
 				</c:forEach>
-				<li><a href="boardList.do?cpage=${cpage+1}">N</a></li>
+				
+				<li><a href="boardList.do?cpage=${cpage+1}${qStr}">N</a></li>
 			</ul>
 		</div>
+		<br>
 		<br>
 		<div>
 			총 게시글 수 : ${totalCount}개, 현재 <span style="color:red">${cpage}</span> / 총 ${pageCount} pages

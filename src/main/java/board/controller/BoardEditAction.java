@@ -6,6 +6,7 @@ import java.io.IOException;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.oreilly.servlet.MultipartRequest;
 import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
@@ -13,11 +14,28 @@ import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
 import board.model.BoardDAOMyBatis;
 import board.model.BoardVO;
 import common.controller.AbstractAction;
+import user.model.UserVO;
 
 public class BoardEditAction extends AbstractAction {
 
 	@Override
 	public void execute(HttpServletRequest req, HttpServletResponse res) throws Exception {
+		
+		// 글수정 작성자 맞는지 보기 1 세션얻어오기
+		HttpSession session=req.getSession();
+		//세션으로부터 로그인된 loginUser통해서 userVO얻기
+		UserVO user=(UserVO)session.getAttribute("loginUser");
+		if(user==null) {
+			req.setAttribute("msg", "로그인해야 글수정이 가능해요");
+			req.setAttribute("loc", "javascript:history.back()");
+			
+			this.setViewPage("message.jsp");
+			this.setRedirect(false);
+			return;
+		}
+		
+		
+		
 		
 		// [2-1] 파일 업로드 처리 ==> 업로드 디렉토리의 절대경로를 얻어오자. MvcWeb//src/main/webapp/Upload <<의 실제 경로.
 		ServletContext application=req.getServletContext(); //절대경로를 얻어 올 수 있는 클래스
@@ -46,7 +64,8 @@ public class BoardEditAction extends AbstractAction {
 		String numStr=mr.getParameter("num");
 		String subject=mr.getParameter("subject");
 		String content=mr.getParameter("content");
-		String userid="hong";
+		//세션에서 UserVO통해 받은 user로 변경했음.
+		String userid=user.getUserid();
 		String filename=mr.getFilesystemName("filename");
 		File file=mr.getFile("filename");
 		long filesize=0;

@@ -4,10 +4,30 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-ma
 
 <mapper namespace="board.model.BoardMapper">
 
+	<!-- [검색 4] 검색 관련 where 조건문을 sql문을 아래 삽입하기 위해 id로 저장했다. 
+		 원하는 sql문 위치에 <include refid="findWhere"/> 를 삽입하면 해당 조건 where절을 사용 할 수 있다. -->
+	<sql id="findWhere">
+		<if test="findType!='' and findKeyword!=''">	<!-- 검색어가 넘어왔다면, -->
+			<where>
+				<if test="findType==1"> <!-- 1=글제목 이 선택되었다면 -->
+					subject like '%'||#{findKeyword}||'%'
+				</if>
+				<if test="findType==2"> <!-- 2=작성자 이 선택되었다면 -->
+					userid like '%'||#{findKeyword}||'%'
+				</if>
+				<if test="findType==3"> <!-- 1=글내용 이 선택되었다면 -->
+					content like '%'||#{findKeyword}||'%'
+				</if>
+			</where>
+		</if>
+	</sql>
+	
+	<!-- [검색5] 검색으로 파라미터타입에  map이 추가되었다. -->
 	<!-- select insert delete update 태그로 직관적으로 작성, 구분이 가능하다. -->
-	<select id="totalCount" resultType="int"> <!-- ORM이라 부르는 이유 db의totalCount를 자바의 int타입으로 맞추겠다 관계형데이터베이스 -->
+	<select id="totalCount" resultType="int" parameterType="map"> <!-- ORM이라 부르는 이유 db의totalCount를 자바의 int타입으로 맞추겠다 관계형데이터베이스 -->
 	<!-- select문은 resultType이 필수임 : _int(기본자료형 int), int(래퍼클래스 java.lang.Integer) -->
 		select count(num) cnt from board
+		<include refid="findWhere"/> <!-- [검색5-1] totalCount의 sql문에 id findWhere인 sql 조건문이 추가로 적용된다.  -->
 	</select>
 	
 	<!-- 시퀀스 증가한 값을 파라미터로 넘어온 vo에 객체에 setting 해주는 기능을 갖는다 <selectKey>가 하는 기능. -->
@@ -30,10 +50,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-ma
 			<!-- Null값을 어떻게 변환해야될지 써줘야 한다. filename:VARCHAR 이렇게. -->
 		</insert>
 	
+	<!-- [검색6] 검색으로 파라미터타입에  map이 추가되었다. -->
 	<!-- [6-4] rownum으로 재정렬, 시작, 끝값으로 필터링하는 페이징처리된 셀렉트문을 이용한다.-->
 	<select id="listBoard" resultType="Board" parameterType="map">
 		select * from (
-			select a.*,rownum rn from (select * from board order by num desc) a
+			select a.*,rownum rn from (select * from board 
+			<include refid="findWhere"/>  <!-- [검색6-1] listBoard의 sql문에 id findWhere인 sql 조건문이 추가로 적용된다.  -->
+			order by num desc) a
 			)where rn between ${start} and ${end}
 	</select>
 	

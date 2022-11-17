@@ -1,6 +1,6 @@
 let win=null;
 function open_idcheck(){
-	win=window.open("idCheck.jsp","idCheck","width=400, height=400, left=200, top=200");	
+	win=window.open("idCheck.do","idCheck","width=400, height=400, left=200, top=200");	
 }//-------------------------------
 
 function setId(uid){

@@ -6,6 +6,7 @@
 	<!-- 타입 별칭 설정 (맵퍼에서 아래type내용을 Board로만 써도 BoardVO 사용가능  -->
 	<typeAliases>
 		<typeAlias type="board.model.BoardVO" alias="Board"/>
+		<typeAlias type="user.model.UserVO" alias="User"/>
 	</typeAliases>
 	
 	<!-- 데이터베이스 트랜잭션 관리자 설정 (기본사항) ====== -->
@@ -28,5 +29,6 @@
 		<!-- <mapper resource="org/mybatis/example/BlogMapper.xml" /> -->
 		<!-- 이부분에서 SQL문이 작성 될 파일의 패키지 경로를 써야 함. -->
 		<mapper resource="board/model/boardMapper.xml" />
+		<mapper resource="user/model/UserMapper.xml" />
 	</mappers>
 </configuration>

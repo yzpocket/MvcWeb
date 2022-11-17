@@ -6,6 +6,7 @@ import java.io.IOException;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.oreilly.servlet.MultipartRequest;
 import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
@@ -13,6 +14,7 @@ import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
 import board.model.BoardDAOMyBatis;
 import board.model.BoardVO;
 import common.controller.AbstractAction;
+import user.model.UserVO;
 
 public class BoardWriteAction extends AbstractAction {
 
@@ -23,6 +25,20 @@ public class BoardWriteAction extends AbstractAction {
 		ServletContext application=req.getServletContext(); //절대경로를 얻어 올 수 있는 클래스
 		String upDir=application.getRealPath("/Upload"); //webapp"/Upload"의 실제 경로를 대체해서 받아 온다.
 		System.out.println("upDir '/Upload'의 실제 경로"+upDir);
+		
+		// 글쓰기 작성자 바꾸기1 세션얻어오기
+		HttpSession session=req.getSession();
+		//세션으로부터 로그인된 loginUser통해서 userVO얻기
+		UserVO user=(UserVO)session.getAttribute("loginUser");
+		if(user==null) {
+			req.setAttribute("msg", "로그인해야 글쓰기가 가능해요");
+			req.setAttribute("loc", "javascript:history.back()");
+			
+			this.setViewPage("message.jsp");
+			this.setRedirect(false);
+			return;
+		}
+		
 		
 		MultipartRequest mr=null;
 		try {
@@ -43,7 +59,8 @@ public class BoardWriteAction extends AbstractAction {
 //		long filesize=0;
 		String subject=mr.getParameter("subject");
 		String content=mr.getParameter("content");
-		String userid="hong";
+		//세션에서 UserVO통해 받은 user로 변경했음.
+		String userid=user.getUserid();
 		String filename=mr.getFilesystemName("filename");
 		File file=mr.getFile("filename");
 		long filesize=0;

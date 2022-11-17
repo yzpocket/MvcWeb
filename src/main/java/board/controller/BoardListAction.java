@@ -26,11 +26,27 @@ public class BoardListAction extends AbstractAction {
 		}
 //페이징 처리로 추가되는 작업--------[6] 아래 6-1,6-2 ... 이동------------------------------
 		
+//검색 처리로 추가되는 작업--------------------------------------------------------------
+		//[검색 1]검색 유형과 검색어 받기
+		String findType=req.getParameter("findType");
+		String findKeyword=req.getParameter("findKeyword");
+		
+		//[검색 1-1] 널값에 대한 유효성 체크
+		if(findType==null) {
+			findType="";
+		}
+		if(findKeyword==null) {
+			findKeyword="";
+		}
+		//[검색7] 검색 후 정렬된 페이지 이동 시 검색된 상태를 유지하는 기능이 필요하다.
+		//BoardListAction에서 검색 쿼리스트링을 qStr을 선언한다.
+		String qStr="&findType="+findType+"&findKeyword="+findKeyword;
+//-------------[검색 1]-------------------------------------------------	
 		
 		BoardDAOMyBatis dao=new BoardDAOMyBatis();
 //페이징 처리로 추가되는 작업----------------------------------------
-		//[1] 총 게시글 수 구하기---------
-		int totalCount=dao.getTotalCount();
+		//[1] 총 게시글 수 구하기---------    [검색 1-2] TotalCount에 영향이 있으니 findType, findKeyword에 파라미터 추가
+		int totalCount=dao.getTotalCount(findType, findKeyword);
 		//[2] 한 페이지당 보여줄 목록 개수 정하기
 		int pageSize=5; //5개씩나오게 지정해봤다.
 		//[3] 페이지 수 구하기
@@ -62,7 +78,8 @@ public class BoardListAction extends AbstractAction {
 		if(cpage>pageCount) { //cpage가 pageCount보다 크면
 			cpage=pageCount;//마지막 페이지로 지정.
 		}
-		//[6-2]구간의 시작값과 끝 값을 변수로 선언한다.
+		//[6-2]구간의 시작값과 끝 값의 규칙을 찾아 변수로 선언한다.
+		//이것은 DB에서 필요하기때문에 DAO에 넘겨줘야 해서 아래 listBoard(파라미터 로) 넘겨준다.
 		int end=cpage * pageSize;
 		int start= end-(pageSize-1);
 		
@@ -70,8 +87,9 @@ public class BoardListAction extends AbstractAction {
 		
 		//[4] 페이지 수 만큼 jsp(=>boardList.jsp)페이지로 이동 
 		//페이지 네비게이션을 만든다. 1,2 , ... 이렇게.. jsp에서 링크를 생성[4],[5] 완료 했다면. 맨위에서 [6]번 진행 
-		
-		List<BoardVO> boardArr=dao.listBoard(start, end);
+						//[검색 1-3] listBoard에 영향이 있으니 findType, findKeyword에 파라미터 추가
+						//dao.listBoard로 이동
+		List<BoardVO> boardArr=dao.listBoard(start, end, findType, findKeyword);
 		
 		req.setAttribute("boardArr", boardArr);
 		req.setAttribute("totalCount", totalCount);
@@ -79,6 +97,8 @@ public class BoardListAction extends AbstractAction {
 		req.setAttribute("pageCount", pageCount);
 		//[6-4] 현재페이지 추가.
 		req.setAttribute("cpage", cpage);
+		//[검색 7-1]검색 쿼리스트링을 페이지 이동과 관련된 boardArr에 qStr 이름의 키값으로 저장
+		req.setAttribute("qStr", qStr);
 		
 		//뷰페이지 지정
 		this.setViewPage("board/boardList.jsp");
