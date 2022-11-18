@@ -11,7 +11,7 @@ public class MemberAddAction extends AbstractAction {
 
 	@Override
 	public void execute(HttpServletRequest req, HttpServletResponse res) throws Exception {
-		req.setCharacterEncoding("UTF-8");
+//		req.setCharacterEncoding("UTF-8"); // Encoding Filter로 대신 할 것이다.
 		//[1]이름, 아이디, 비밀번호, 연락처, 우편번호, 주소1, 주소2
 		String name=req.getParameter("name");
 		String userid=req.getParameter("userid");
@@ -37,7 +37,7 @@ public class MemberAddAction extends AbstractAction {
 
 		//[5]회원가입 성공, 실패 후 정하고 성공시 로그인 페이지 이동
 		String str=(n>0)?"회원 가입 성공-로그인 페이지로 이동":"가입 실패";
-		String loc=(n>0)?"Login.do":"javascript:history.back()";
+		String loc=(n>0)?"login.do":"javascript:history.back()";
 		
 		req.setAttribute("msg", str);
 		req.setAttribute("loc", loc);

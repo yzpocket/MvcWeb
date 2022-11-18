@@ -68,7 +68,9 @@
 		이 중 파일업로드를 하려면 (2) multipart/form-data 로 지정해야 한다.
 		    => *파일 이름과 함께 파일 데이터*가 서버에 전송된다.
 	--%>
-	<form name="boardF" id="boardFrm" action="boardWriteEnd.do" method="POST" enctype="multipart/form-data"
+									<%-- ${pageContext.request.contextPath}/ ==> 컨텍스트명("/MvcWeb)을 반환함 
+												%=request.getContextPath()% 와 동일함.---%>
+	<form name="boardF" id="boardFrm" action="${pageContext.request.contextPath}/boardWriteEnd.do" method="POST" enctype="multipart/form-data"
 	onsubmit="return board_check()">
 		<!-- 수정 폼에는 기준이 될 글번호가 히든으로 넘어와야함. -->
 		<input type="hidden" name="num" value="">

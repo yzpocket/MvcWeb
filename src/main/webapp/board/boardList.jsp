@@ -9,6 +9,8 @@ WEB-INF/lib에 넣어둔다.
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!-- 포맷관련 태그.. -->
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<!-- jQuery CDN 임포트 // 유효성 체크용 -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 <!DOCTYPE html>
 <jsp:include page="/top.jsp"/>
 <style>
@@ -78,7 +80,7 @@ WEB-INF/lib에 넣어둔다.
 	<h1>Board List</h1>
 	<br>
 	<p>
-	<a href="boardWrite.do">글쓰기</a>|<a href="boardList.do">글목록</a>
+	<a href="${pageContext.request.contextPath}/boardWrite.do">글쓰기</a>|<a href="boardList.do">글목록</a>
 	<%-- <h3>총 게시글 수 : ${totalCount}개</h3> --%>
 <%-- 	${boardArr} --%>
 	</p>

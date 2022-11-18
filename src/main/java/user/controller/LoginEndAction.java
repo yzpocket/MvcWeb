@@ -38,7 +38,7 @@ public class LoginEndAction extends AbstractAction {
 					ck.setMaxAge(0); //쿠키 저장 안하고 삭제
 				}
 				ck.setPath("/");
-				res.addCookie(ck); //response에 포함시켜서 쿠키를 보내게 된다.
+				res.addCookie(ck); //response에 포함시켜서 클라이언트에게 쿠키를 보내게 된다.(쿠키허용여부에 따라 보관유무)
 			}//이렇게 세션에 loginUser밸류를 "loginUser"키에 저장한다.
 			this.setViewPage("index.do");
 			this.setRedirect(true);

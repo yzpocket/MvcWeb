@@ -42,7 +42,7 @@ public class UserDAOMyBatis {
 	public boolean idCheck(String userid) {
 		try {
 			ses=this.getSessionFactory().openSession();
-			Integer idx=ses.selectOne(NS+".idCheck", userid);
+			Integer idx=ses.selectOne(NS+".idCheck", userid); //아이디를 integer로 받음
 			if(idx==null) { //해당 회원이 없을때 true로 id사용 가능. 
 				return true;
 			}				//해당 회원이 있을때 false로 id사용 불가.

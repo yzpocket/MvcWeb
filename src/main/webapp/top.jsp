@@ -29,7 +29,7 @@
         <nav> <!-- Nav section -->
             <ul>
                 <li><a href="<%=myctx%>/index.do">Home</a></li>
-                <li><a href="<%=myctx%>/boardWrite.do">Board 쓰기</a></li>
+                <li><a href="<%=myctx%>/user/boardWrite.do">Board 쓰기</a></li>
                 <li><a href="<%=myctx%>/boardList.do">Board 목록</a></li>
                 <li><a href="<%=myctx%>/joinForm.do">회원가입</a></li>
                 <!-- el 표현식 연산자 : eq (==)와동일함, ne(!=)와 동일함 -->
@@ -41,6 +41,9 @@
 	                	<li><a href="<%=myctx%>/logout.do">로그아웃</a></li>
 	                </c:otherwise>
 				</c:choose>
+                
+                <li><a href="<%=myctx%>/user/myPage.do">MyPage</a></li>
+				
             </ul>
         </nav>
         <div class="clear"></div> <!-- div float clear blank-->
